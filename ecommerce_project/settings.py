@@ -185,8 +185,6 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'      # Skip verification for now
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
-import os
-
 if os.getenv("CREATE_SUPERUSER") == "True":
     from django.contrib.auth import get_user_model
     User = get_user_model()
