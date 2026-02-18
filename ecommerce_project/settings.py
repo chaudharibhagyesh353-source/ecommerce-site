@@ -32,7 +32,7 @@ DEBUG = os.getenv("DEBUG") == "True"
 ALLOWED_HOSTS = [
      "127.0.0.1",
     "localhost",
-    ".onrender.com",
+    "ecommerce-site-cscm.onrender.com",
 ]
 
 # -------------------------------
