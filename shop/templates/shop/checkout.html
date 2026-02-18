@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="min-h-screen bg-neutral-50 pb-20">
+    <div class="bg-white border-b border-neutral-100 py-8 mb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl md:text-4xl font-black uppercase tracking-tighter text-black">Checkout</h1>
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">
+                Graduate • Logistics & Payment
+            </p>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <form id="checkout-main-form" onsubmit="handleSubmit(event)">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                <div class="lg:col-span-8 space-y-6">
+
+                    <div class="bg-white p-6 md:p-8 rounded-[2rem] border border-neutral-100 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-black uppercase tracking-tighter">
+                                Shipping Logistics
+                            </h2>
+                            {% if request.user.is_authenticated %}
+                            <span class="text-[9px] font-black uppercase tracking-widest bg-black text-white px-3 py-1 rounded-full">
+                                Profile Linked
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="firstName" value="{{ request.user.first_name }}" placeholder="First Name" required
+                                   class="w-full px-5 py-4 bg-gray-50 rounded-2xl border-transparent focus:bg-white focus:border-black transition-all">
+                            
+                            <input type="text" name="lastName" value="{{ request.user.last_name }}" placeholder="Last Name" required
+                                   class="w-full px-5 py-4 bg-gray-50 rounded-2xl border-transparent focus:bg-white focus:border-black transition-all">
+
+                            <input type="text" name="address" value="{{ profile.address|default:'' }}" placeholder="Flat, House no., Building, Company, Apartment" required
+                                   class="md:col-span-2 w-full px-5 py-4 bg-gray-50 rounded-2xl border-transparent focus:bg-white focus:border-black transition-all">
+
+                            <input type="text" name="city" value="{{ profile.city|default:'' }}" placeholder="City" required
+                                   class="w-full px-5 py-4 bg-gray-50 rounded-2xl border-transparent focus:bg-white focus:border-black transition-all">
+
+                            <input type="text" name="state" value="{{ profile.state|default:'' }}" placeholder="State" required
+                                   class="w-full px-5 py-4 bg-gray-50 rounded-2xl border-transparent focus:bg-white focus:border-black transition-all">
+
+                            <input type="text" name="zipCode" value="{{ profile.zip_code|default:'' }}" placeholder="Pincode" required
+                                   class="w-full px-5 py-4 bg-gray-50 rounded-2xl border-transparent focus:bg-white focus:border-black transition-all">
+
+                            <input type="tel" name="phone" value="{{ profile.phone|default:'' }}" placeholder="Phone (10-digit)" required
+                                   class="w-full px-5 py-4 bg-gray-50 rounded-2xl border-transparent focus:bg-white focus:border-black transition-all">
+
+                            <input type="email" name="email" value="{{ request.user.email }}" placeholder="Email Address" required
+                                   class="md:col-span-2 w-full px-5 py-4 bg-gray-50 rounded-2xl border-transparent focus:bg-white focus:border-black transition-all">
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-neutral-100 shadow-sm">
+                        <h2 class="text-lg font-black uppercase tracking-tighter mb-6">
+                            Payment Method
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <label onclick="selectPayment('card')" id="label-card"
+                                   class="payment-label p-6 border-2 border-neutral-100 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all flex flex-col items-center gap-2 group">
+                                <i data-lucide="credit-card" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-xs font-black uppercase tracking-widest">Card</span>
+                                <input type="radio" name="payment" value="card" class="hidden">
+                            </label>
+
+                            <label onclick="selectPayment('upi')" id="label-upi"
+                                   class="payment-label p-6 border-2 border-neutral-100 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all flex flex-col items-center gap-2 group">
+                                <i data-lucide="smartphone" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-xs font-black uppercase tracking-widest">UPI</span>
+                                <input type="radio" name="payment" value="upi" class="hidden">
+                            </label>
+
+                            <label onclick="selectPayment('cod')" id="label-cod"
+                                   class="payment-label p-6 border-2 border-black bg-neutral-50 rounded-2xl cursor-pointer transition-all flex flex-col items-center gap-2 group">
+                                <i data-lucide="truck" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-xs font-black uppercase tracking-widest">Cash</span>
+                                <input type="radio" name="payment" value="cod" checked class="hidden">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4">
+                    <div class="bg-black text-white p-8 rounded-[2.5rem] sticky top-24 shadow-2xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-black uppercase tracking-tighter">Summary</h2>
+                            <i data-lucide="shopping-bag" class="w-5 h-5 text-gray-500"></i>
+                        </div>
+
+                        <div id="checkout-cart-items" class="space-y-4 max-h-[40vh] overflow-y-auto no-scrollbar mb-6 border-b border-white/10 pb-6">
+                            </div>
+
+                        <div class="space-y-3 text-[10px] font-black uppercase tracking-[0.2em]">
+                            <div class="flex justify-between text-gray-400">
+                                <span>Subtotal</span>
+                                <span id="subtotal-display">₹0</span>
+                            </div>
+                            <div class="flex justify-between text-gray-400">
+                                <span>Shipping</span>
+                                <span class="text-green-500">Free</span>
+                            </div>
+                            <div class="flex justify-between text-white text-xl pt-5 border-t border-white/10 mt-2">
+                                <span class="tracking-tighter">Total</span>
+                                <span id="total-display" class="tracking-tighter">₹0</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="place-order-btn"
+                                class="w-full bg-white text-black py-5 rounded-2xl font-black mt-10 hover:bg-gray-200 active:scale-95 transition-all uppercase tracking-widest text-xs shadow-xl">
+                            Place Order
+                        </button>
+                        
+                        <p class="text-[8px] text-gray-500 text-center mt-6 font-bold uppercase tracking-widest">
+                            Secure Encrypted Checkout • Graduate 2026
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+// ================= SELECT PAYMENT METHOD =================
+function selectPayment(method) {
+    document.querySelectorAll('.payment-label').forEach(label => {
+        label.classList.remove('border-black', 'bg-neutral-50');
+        label.classList.add('border-neutral-100');
+    });
+
+    const activeLabel = document.getElementById('label-' + method);
+    activeLabel.classList.add('border-black', 'bg-neutral-50');
+    activeLabel.classList.remove('border-neutral-100');
+    activeLabel.querySelector('input').checked = true;
+}
+
+// ================= RENDER CART SUMMARY =================
+function loadCartSummary() {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const container = document.getElementById("checkout-cart-items");
+    let total = 0;
+
+    if (cart.length === 0) {
+        window.location.href = "{% url 'shop' %}";
+        return;
+    }
+
+    container.innerHTML = "";
+    cart.forEach(item => {
+        total += parseFloat(item.price) * item.quantity;
+        
+        container.innerHTML += `
+            <div class="flex gap-4 items-center animate-fadeIn">
+                <div class="w-12 h-12 bg-white/5 rounded-xl overflow-hidden flex-shrink-0 border border-white/10">
+                    <img src="${item.image}" class="w-full h-full object-cover opacity-90">
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[10px] font-black uppercase truncate tracking-tight">${item.name}</p>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">${item.selectedSize} • QTY: ${item.quantity}</p>
+                </div>
+                <p class="text-[11px] font-black">₹${item.price * item.quantity}</p>
+            </div>
+        `;
+    });
+
+    document.getElementById("subtotal-display").innerText = "₹" + total;
+    document.getElementById("total-display").innerText = "₹" + total;
+    
+    if(window.lucide) lucide.createIcons();
+}
+
+document.addEventListener("DOMContentLoaded", loadCartSummary);
+
+// ================= HANDLE ORDER SUBMISSION =================
+async function handleSubmit(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("place-order-btn");
+    const cartData = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    const totalAmount = cartData.reduce((s, i) => s + (i.price * i.quantity), 0);
+
+    const finalData = {
+        ...data,
+        cart: cartData,
+        totalAmount: totalAmount
+    };
+
+    btn.disabled = true;
+    btn.innerHTML = "<span class='animate-pulse'>Validating...</span>";
+
+    try {
+        if (finalData.payment === "cod") {
+            const response = await fetch("{% url 'checkout' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(finalData)
+            });
+
+            const result = await response.json();
+
+            if (result.status === "success") {
+                localStorage.removeItem("cart");
+                window.location.href = "{% url 'profile' %}";
+            } else {
+                throw new Error(result.message || "Order processing failed.");
+            }
+        } 
+        else {
+            await payNow(finalData);
+        }
+    } catch (error) {
+        alert("System Error: " + error.message);
+        btn.disabled = false;
+        btn.innerHTML = "Place Order";
+    }
+}
+
+// ================= RAZORPAY GATEWAY =================
+async function payNow(finalData) {
+    const res = await fetch("/create-payment-order/", {
+        method: "POST",
+        headers: { 
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ amount: finalData.totalAmount })
+    });
+
+    const data = await res.json();
+    
+    if(data.status === "error") throw new Error(data.message);
+
+    const options = {
+        key: data.key,
+        amount: data.amount,
+        currency: "INR",
+        name: "Graduate Clothing",
+        description: "Payment for Order",
+        order_id: data.order_id,
+        handler: async function (response) {
+            // Update data for final backend recording
+            finalData.payment_id = response.razorpay_payment_id;
+            finalData.payment = "Razorpay"; // Sync with payment_method logic in views.py
+
+            const finalRes = await fetch("{% url 'checkout' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(finalData)
+            });
+
+            const finalResult = await finalRes.json();
+            if(finalResult.status === "success") {
+                localStorage.removeItem("cart");
+                window.location.href = "{% url 'profile' %}";
+            }
+        },
+        prefill: {
+            name: `${finalData.firstName} ${finalData.lastName}`,
+            email: finalData.email,
+            contact: finalData.phone
+        },
+        theme: { color: "#000000" },
+        modal: {
+            ondismiss: function() {
+                const btn = document.getElementById("place-order-btn");
+                btn.disabled = false;
+                btn.innerHTML = "Place Order";
+            }
+        }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+}
+</script>
+
+{% endblock %}

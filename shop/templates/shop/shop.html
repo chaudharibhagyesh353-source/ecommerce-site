@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen bg-white">
+
+    <!-- HEADER -->
+    <div class="bg-white border-b border-neutral-100 py-10 md:py-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <h1 class="text-3xl md:text-5xl uppercase tracking-tighter text-center font-black">
+                All Essentials
+            </h1>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- MOBILE FILTER BAR -->
+        <div class="lg:hidden flex items-center justify-between mb-6">
+
+            <p class="text-sm font-bold">
+                {{ products|length }} Styles
+            </p>
+
+            <button onclick="toggleFilters()"
+                class="flex items-center gap-2 px-5 py-3 bg-black text-white rounded-xl shadow-lg active:scale-95">
+                
+                <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                <span class="text-xs font-bold uppercase">Filters</span>
+            </button>
+
+        </div>
+
+        <div class="flex gap-10">
+
+            <!-- ================= SIDEBAR ================= -->
+            <div id="filter-sidebar"
+                class="fixed top-0 left-0 h-full w-[85%] max-w-sm bg-white z-[100]
+                       transform -translate-x-full
+                       transition-transform duration-300 ease-in-out
+                       lg:translate-x-0 lg:static lg:h-auto lg:w-80
+                       shadow-2xl overflow-y-auto">
+
+                <!-- MOBILE HEADER -->
+                <div class="flex justify-between items-center p-6 border-b lg:hidden">
+                    <h2 class="text-lg font-black uppercase">Filters</h2>
+
+                    <button onclick="toggleFilters()"
+                        class="p-2 bg-neutral-100 rounded-full">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <div class="p-6 space-y-10">
+
+                    <!-- CATEGORIES -->
+                    <div>
+                        <h3 class="text-xs font-black uppercase text-neutral-400 mb-4">
+                            Categories
+                        </h3>
+
+                        <div class="space-y-3">
+
+                            <a href="?category=all"
+                               class="block text-sm font-bold hover:text-black">
+                               All Essentials
+                            </a>
+
+                            {% for category in categories %}
+                            <a href="?category={{ category.slug }}"
+                               class="block text-sm text-neutral-500 hover:text-black">
+                               {{ category.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- SIZES -->
+                    <div>
+                        <h3 class="text-xs font-black uppercase text-neutral-400 mb-4">
+                            Sizes
+                        </h3>
+
+                        <div class="grid grid-cols-4 gap-2">
+                            {% for size in sizes %}
+                            <a href="?size={{ size.slug }}"
+                               class="aspect-square flex items-center justify-center text-xs font-bold border rounded-lg hover:border-black">
+                                {{ size.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- COLORS -->
+                    <div>
+                        <h3 class="text-xs font-black uppercase text-neutral-400 mb-4">
+                            Colors
+                        </h3>
+
+                        <div class="flex gap-3 flex-wrap">
+                            {% for color in colors %}
+                            <a href="?color={{ color.slug }}">
+                                <div class="w-6 h-6 rounded-full border"
+                                     style="background-color: {{ color.slug }}">
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- RESET BUTTON -->
+                    <div class="pt-6 border-t">
+                        <a href="{% url 'shop' %}"
+                           class="flex items-center justify-center w-full py-4
+                                  bg-black text-white
+                                  rounded-xl
+                                  text-sm font-extrabold uppercase
+                                  shadow-lg ring-2 ring-black
+                                  hover:bg-white hover:text-black
+                                  transition">
+                            Reset Filters
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- OVERLAY -->
+            <div id="filter-overlay"
+                 onclick="toggleFilters()"
+                 class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden">
+            </div>
+
+            <!-- ================= PRODUCTS ================= -->
+            <div class="flex-1">
+
+                <div class="hidden lg:block mb-6">
+                    <p class="text-sm font-bold">
+                        Showing {{ products|length }} Styles
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for product in products %}
+                        {% include 'shop/components/product_card.html' %}
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleFilters() {
+    const sidebar = document.getElementById('filter-sidebar');
+    const overlay = document.getElementById('filter-overlay');
+
+    sidebar.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+
+    // Lock body scroll
+    if (!sidebar.classList.contains('-translate-x-full')) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+}
+</script>
+
+{% endblock %}

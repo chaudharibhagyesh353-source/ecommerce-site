@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen bg-white pb-24 md:pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12">
+
+        <div class="flex items-center space-x-2 text-xs md:text-sm text-neutral-500 mb-8">
+            <a href="{% url 'home' %}" class="hover:text-black transition-colors">Home</a>
+            <span>/</span>
+            <a href="{% url 'shop' %}" class="hover:text-black transition-colors">Shop</a>
+            <span>/</span>
+            <span class="text-black font-medium truncate">{{ product.name }}</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20">
+            
+            <div class="space-y-6">
+                <div class="aspect-[3/4] bg-neutral-50 overflow-hidden border border-neutral-100 rounded-[2.5rem] shadow-sm relative group">
+                    {% with first_img=product.images.all|first %}
+                        {% if first_img and first_img.image %}
+                            <img id="main-image"
+                                 src="{{ first_img.image.url }}"
+                                 alt="{{ product.name }}"
+                                 class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105" />
+                        {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50 uppercase text-[10px] font-black italic">
+                                Graduate / Photo Coming Soon
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                <div id="thumbnail-grid" class="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto no-scrollbar pb-2">
+                    {% for img in product.images.all %}
+                        {% if img.image %}
+                        <button onclick="changeImage('{{ img.image.url }}', this)"
+                            data-color-id="{% if img.color %}{{ img.color.id }}{% else %}general{% endif %}"
+                            class="thumbnail-btn flex-shrink-0 w-20 h-20 md:w-full aspect-square bg-neutral-50 overflow-hidden border-2 {% if forloop.first %}border-black{% else %}border-transparent{% endif %} rounded-2xl transition-all">
+                            <img src="{{ img.image.url }}" class="w-full h-full object-cover" />
+                        </button>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="uppercase tracking-[0.2em] text-[10px] font-black text-neutral-400">
+                        {% for cat in product.categories.all %}{{ cat.name }}{% if not forloop.last %} • {% endif %}{% endfor %}
+                    </span>
+                    {% if product.stock_count > 0 %}
+                        <span class="px-3 py-1 rounded-full text-[9px] font-black bg-green-50 text-green-600 uppercase border border-green-100">Live / In Stock</span>
+                    {% else %}
+                        <span class="px-3 py-1 rounded-full text-[9px] font-black bg-red-50 text-red-600 uppercase border border-red-100">Sold Out</span>
+                    {% endif %}
+                </div>
+
+                <h1 class="text-4xl md:text-6xl mb-6 font-black tracking-tighter text-black uppercase leading-[0.9]">{{ product.name }}</h1>
+
+                <div class="flex items-center space-x-4 mb-8">
+                    <span class="text-4xl font-black text-black">₹{{ product.price }}</span>
+                    {% if product.off_percentage > 0 %}
+                        <span class="text-lg text-neutral-300 line-through font-bold">₹{{ product.original_price|floatformat:0 }}</span>
+                        <span class="bg-black text-white px-2 py-1 text-[10px] font-black rounded-lg">SALE -{{ product.off_percentage }}%</span>
+                    {% endif %}
+                </div>
+
+                <p class="text-neutral-500 text-sm md:text-base mb-10 leading-relaxed font-medium max-w-lg">{{ product.description }}</p>
+
+                <div class="mb-10">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-neutral-300">Archive / Colorway</h3>
+                    <div class="flex flex-wrap gap-3">
+                        {% for color in product.colors.all %}
+                            <button onclick="filterByColor('{{ color.id }}', this)"
+                                class="color-btn px-6 py-3 border-2 border-neutral-100 rounded-2xl hover:border-black transition-all font-black text-[10px] uppercase tracking-widest">
+                                {{ color.name }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-12">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-300">Archive / Sizing</h3>
+                        <button class="text-[9px] font-black uppercase underline text-neutral-300 hover:text-black">Size Guide</button>
+                    </div>
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-3">
+                        {% for size in sizes %}
+                            <button onclick="selectSize(this, '{{ size.name }}')"
+                                class="size-btn py-4 border-2 border-neutral-100 rounded-2xl font-black text-xs hover:border-black transition-all uppercase">
+                                {{ size.name }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="hidden md:flex flex-col space-y-4">
+                    <div class="flex space-x-4">
+                        <button onclick="handleAddToCart(true)"
+                            class="flex-1 bg-white border-2 border-black text-black py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-neutral-50 transition-all active:scale-95 shadow-lg">
+                            Add to Bag
+                        </button>
+                        <button class="px-6 py-5 border-2 border-neutral-100 hover:border-black rounded-2xl transition-all">
+                            <i data-lucide="heart" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <button onclick="handleBuyNow()"
+                        class="w-full bg-black text-white py-5 font-black uppercase tracking-widest text-xs hover:bg-neutral-800 transition-all shadow-2xl rounded-2xl active:scale-95">
+                        Express Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-32 border-t border-neutral-100 pt-20">
+            <h2 class="text-2xl font-black uppercase tracking-tighter mb-12">Customer Intelligence</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+                <div class="space-y-8">
+                    <div class="flex items-center space-x-4">
+                        <h3 class="text-7xl font-black">4.0</h3>
+                        <div class="flex flex-col">
+                            <div class="flex text-yellow-400">
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 text-neutral-200"></i>
+                            </div>
+                            <span class="text-[9px] text-neutral-400 font-black uppercase tracking-widest mt-2">Verified Feedback</span>
+                        </div>
+                    </div>
+                    <button class="w-full py-5 bg-neutral-900 text-white font-black uppercase text-[10px] rounded-2xl tracking-[0.2em] shadow-xl active:scale-95">Submit Review</button>
+                </div>
+
+                <div class="lg:col-span-2 space-y-12">
+                    {% for review in reviews %}
+                        <div class="border-b border-neutral-50 pb-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center text-[11px] font-black uppercase">{{ review.author_name|slice:":1" }}</div>
+                                    <span class="text-[10px] font-black uppercase tracking-widest">{{ review.author_name }}</span>
+                                </div>
+                                <span class="text-[9px] text-neutral-400 font-black uppercase tracking-widest">{{ review.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <p class="text-neutral-500 text-sm leading-relaxed font-medium">{{ review.text }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-neutral-400 italic text-sm">No feedback on this style yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-32 border-t border-neutral-100 pt-20">
+            <h2 class="text-2xl font-black uppercase tracking-tighter mb-10">You May Also Like</h2>
+            <div class="flex overflow-x-auto pb-10 space-x-6 no-scrollbar snap-x">
+                {% for related in related_products %}
+                    <div class="min-w-[260px] md:min-w-[320px] snap-start group">
+                        <a href="{% url 'product_detail' related.id %}" class="block">
+                            <div class="aspect-[3/4] bg-neutral-50 rounded-[2rem] overflow-hidden mb-6 relative border border-neutral-100 shadow-sm transition-all duration-500 hover:shadow-xl">
+                                {% with related.images.all|first as rel_img %}
+                                    {% if rel_img and rel_img.image %}
+                                        <img src="{{ rel_img.image.url }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                    {% else %}
+                                        <div class="w-full h-full bg-neutral-100 flex items-center justify-center text-[8px] font-black uppercase text-gray-400">No Photo</div>
+                                    {% endif %}
+                                {% endwith %}
+                                {% if related.off_percentage > 0 %}
+                                    <span class="absolute top-4 left-4 bg-black text-white text-[9px] font-black px-3 py-1.5 rounded-lg">SALE -{{ related.off_percentage }}%</span>
+                                {% endif %}
+                            </div>
+                            <h3 class="font-bold text-gray-900 text-sm mb-1 truncate group-hover:text-neutral-600 transition-colors">{{ related.name }}</h3>
+                            <p class="text-lg font-black text-black">₹{{ related.price }}</p>
+                        </a>
+                    </div>
+                {% empty %}
+                    <p class="text-neutral-400 italic text-sm">Scanning for similar styles...</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 p-4 grid grid-cols-2 gap-3 z-50 md:hidden shadow-2xl">
+    <button onclick="handleAddToCart(true)" class="bg-white border-2 border-black text-black py-4 font-black text-[10px] uppercase rounded-xl">Add to Bag</button>
+    <button onclick="handleBuyNow()" class="bg-black text-white py-4 font-black text-[10px] uppercase rounded-xl">Buy Now</button>
+</div>
+
+<script>
+    let currentSelectedSize = null;
+    let currentSelectedColor = null;
+
+    function changeImage(src, btn) {
+        const mainImg = document.getElementById('main-image');
+        if (!mainImg) return;
+        mainImg.style.opacity = '0.5';
+        setTimeout(() => {
+            mainImg.src = src;
+            mainImg.style.opacity = '1';
+        }, 150);
+        document.querySelectorAll('.thumbnail-btn').forEach(b => b.classList.replace('border-black', 'border-transparent'));
+        btn.classList.replace('border-transparent', 'border-black');
+    }
+
+    function filterByColor(colorId, btn) {
+        currentSelectedColor = colorId;
+
+        // Highlight selected color button
+        document.querySelectorAll('.color-btn').forEach(b => {
+            b.classList.remove('bg-black', 'text-white', 'border-black');
+        });
+        btn.classList.add('bg-black', 'text-white', 'border-black');
+
+        let firstVisibleThumb = null;
+
+        document.querySelectorAll('.thumbnail-btn').forEach(thumb => {
+            const thumbColor = thumb.getAttribute('data-color-id');
+
+            if (thumbColor === colorId || thumbColor === 'general') {
+                thumb.classList.remove('hidden');
+
+                if (!firstVisibleThumb) {
+                    firstVisibleThumb = thumb;
+                }
+            } else {
+                thumb.classList.add('hidden');
+            }
+        });
+
+        // Change main image to first visible thumbnail
+        if (firstVisibleThumb) {
+            const imgSrc = firstVisibleThumb.querySelector('img').src;
+            changeImage(imgSrc, firstVisibleThumb);
+        }
+    }
+
+
+    function selectSize(btn, size) {
+        currentSelectedSize = size;
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('bg-black', 'text-white', 'border-black'));
+        btn.classList.add('bg-black', 'text-white', 'border-black');
+    }
+
+    function handleBuyNow() {
+        if (!currentSelectedSize) { alert('Please select your fit first.'); return; }
+        handleAddToCart(false);
+        window.location.href = "{% url 'checkout' %}";
+    }
+
+    function handleAddToCart(showSuccess = true) {
+        if (!currentSelectedSize) { alert('Please select a size.'); return; }
+        const product = {
+            id: '{{ product.id }}',
+            name: '{{ product.name|escapejs }}',
+            price: '{{ product.price }}',
+            selectedSize: currentSelectedSize,
+            selectedColor: currentSelectedColor,
+            image: document.getElementById('main-image').src,
+            quantity: 1
+        };
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existingItemIndex = cart.findIndex(item => item.id === product.id && item.selectedSize === product.selectedSize);
+        if (existingItemIndex > -1) {
+            cart[existingItemIndex].quantity += 1;
+        } else {
+            cart.push(product);
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        if (showSuccess && typeof showToast === 'function') {
+            showToast('Item added to your bag.');
+        } else if (showSuccess) {
+            alert('Item added to bag!');
+        }
+    }
+</script>
+{% endblock %}

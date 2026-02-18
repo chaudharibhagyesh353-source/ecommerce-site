@@ -1,0 +1,145 @@
+{% extends 'shop/dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Dashboard Overview</h1>
+    <p class="text-gray-500">Welcome back, {{ request.user.username }}</p>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Daily Sales</p>
+                <h3 class="text-3xl font-bold">${{ daily_sales }}</h3>
+            </div>
+            <div class="p-2 bg-green-100 rounded-lg">
+                <i data-lucide="dollar-sign" class="w-6 h-6 text-green-600"></i>
+            </div>
+        </div>
+        <p class="text-sm text-green-600 flex items-center">
+            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+            <span>Today's Revenue</span>
+        </p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Weekly Sales</p>
+                <h3 class="text-3xl font-bold">${{ weekly_sales }}</h3>
+            </div>
+            <div class="p-2 bg-blue-100 rounded-lg">
+                <i data-lucide="calendar" class="w-6 h-6 text-blue-600"></i>
+            </div>
+        </div>
+        <p class="text-sm text-blue-600 flex items-center">
+            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+            <span>This Week</span>
+        </p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Monthly Sales</p>
+                <h3 class="text-3xl font-bold">${{ monthly_sales }}</h3>
+            </div>
+            <div class="p-2 bg-purple-100 rounded-lg">
+                <i data-lucide="credit-card" class="w-6 h-6 text-purple-600"></i>
+            </div>
+        </div>
+        <p class="text-sm text-purple-600 flex items-center">
+            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+            <span>This Month</span>
+        </p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Sales Chart -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h2 class="text-lg font-bold mb-4">Sales Analytics</h2>
+        <canvas id="salesChart" height="200"></canvas>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-bold">Recent Orders</h2>
+            <button class="text-sm text-blue-600 hover:underline">View All</button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-xs text-gray-500 uppercase border-b border-gray-100">
+                        <th class="pb-3">Order ID</th>
+                        <th class="pb-3">Customer</th>
+                        <th class="pb-3">Amount</th>
+                        <th class="pb-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    {% for order in recent_orders %}
+                    <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50">
+                        <td class="py-3 font-medium">#{{ order.id }}</td>
+                        <td class="py-3">{{ order.first_name }} {{ order.last_name }}</td>
+                        <td class="py-3">${{ order.total_amount }}</td>
+                        <td class="py-3">
+                            <span class="px-2 py-1 rounded-full text-xs 
+                                {% if order.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                                {% elif order.status == 'Delivered' %}bg-green-100 text-green-800
+                                {% elif order.status == 'Cancelled' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="py-4 text-center text-gray-500">No orders yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Revenue',
+                data: [120, 190, 300, 500, 200, 300, 400], // Placeholder data
+                borderColor: 'black',
+                tension: 0.4,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        borderDash: [2, 4]
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

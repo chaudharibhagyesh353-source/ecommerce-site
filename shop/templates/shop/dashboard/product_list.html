@@ -1,0 +1,91 @@
+{% extends 'shop/dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold">Products</h1>
+    <a href="{% url 'dashboard_product_add' %}"
+        class="bg-black text-white px-4 py-2 rounded flex items-center space-x-2 hover:bg-neutral-800 transition-colors">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>Add Product</span>
+    </a>
+</div>
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                    <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                    <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                    <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for product in products %}
+                <tr class="hover:bg-gray-50">
+                    
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                                {% with product.images.all.0 as first_image %}
+                                    {% if first_image and first_image.image %}
+                                        <img class="h-10 w-10 object-cover"
+                                            src="{{ first_image.image.url }}"
+                                            alt="{{ product.name }}">
+                                    {% else %}
+                                        <div class="h-full w-full flex items-center justify-center text-gray-400">
+                                            <i data-lucide="image" class="w-4 h-4"></i>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {% for cat in product.categories.all %}
+                            {{ cat.name }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            <span class="text-gray-400">-</span>
+                        {% endfor %}
+                    </td>
+
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        ₹{{ product.price }}
+                    </td>
+
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {{ product.stock_count }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {% if product.in_stock and product.stock_count > 0 %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                Out of Stock
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="px-6 py-4 text-right text-sm font-medium">
+                        <a href="{% url 'dashboard_product_edit' product.id %}" class="text-black hover:text-gray-600">
+                            Edit
+                        </a>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

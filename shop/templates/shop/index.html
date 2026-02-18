@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .snap-x { scroll-snap-type: x mandatory; }
+    .snap-start { scroll-snap-align: start; }
+    
+    .hero-gradient {
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.5) 100%);
+    }
+
+    @keyframes slow-zoom { from { transform: scale(1); } to { transform: scale(1.1); } }
+    .animate-slow-zoom { animation: slow-zoom 20s infinite alternate ease-in-out; }
+
+    @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+    .animate-marquee { animation: marquee 30s linear infinite; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-white pb-12">
+
+    <section class="relative h-[85vh] md:h-[90vh] bg-black overflow-hidden">
+        <img src="{% static 'images/main_hero.png' %}" alt="Graduate Hero"
+            class="absolute inset-0 w-full h-full object-cover opacity-60 scale-105 animate-slow-zoom" />
+
+        <div class="absolute inset-0 hero-gradient flex items-center justify-center">
+            <div class="text-center text-white px-6 max-w-4xl">
+                <h1 class="text-5xl md:text-8xl font-black tracking-tighter uppercase mb-6 leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-700">
+                    Style Your <br class="md:hidden"> Journey
+                </h1>
+                <p class="text-lg md:text-xl mb-10 text-gray-300 font-medium max-w-xl mx-auto leading-relaxed opacity-90">
+                    Premium essentials for the modern graduate. Designed in India, crafted for the world.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="{% url 'shop' %}"
+                        class="w-full sm:w-auto bg-black text-white border-2 border-white px-12 py-5 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-all duration-300 shadow-2xl active:scale-95">
+                        Shop Collection
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="bg-black py-4 overflow-hidden whitespace-nowrap border-y border-white/10">
+        <div class="inline-block animate-marquee">
+            <span class="text-white font-black uppercase tracking-[0.3em] text-[10px] mx-10">Premium Quality</span>
+            <span class="text-white font-black uppercase tracking-[0.3em] text-[10px] mx-10">Secure Checkout</span>
+            <span class="text-white font-black uppercase tracking-[0.3em] text-[10px] mx-10">Pan-India Shipping</span>
+            <span class="text-white font-black uppercase tracking-[0.3em] text-[10px] mx-10">Exclusive Drops</span>
+            <span class="text-white font-black uppercase tracking-[0.3em] text-[10px] mx-10">Premium Quality</span>
+            <span class="text-white font-black uppercase tracking-[0.3em] text-[10px] mx-10">Secure Checkout</span>
+            <span class="text-white font-black uppercase tracking-[0.3em] text-[10px] mx-10">Pan-India Shipping</span>
+            <span class="text-white font-black uppercase tracking-[0.3em] text-[10px] mx-10">Exclusive Drops</span>
+        </div>
+    </div>
+
+    <section id="collections" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col items-center mb-16 text-center">
+                <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tight text-gray-900">The Collections</h2>
+                <div class="h-1.5 w-16 bg-black mt-2"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <a href="{% url 'shop' %}?category=men"
+                    class="group relative aspect-[4/5] overflow-hidden rounded-3xl bg-gray-100 block shadow-sm hover:shadow-2xl transition-all duration-500">
+                    <img src="{% static 'images/men.jpeg' %}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Men's Collection" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex flex-col justify-end p-8">
+                        <h3 class="text-white text-3xl font-black uppercase tracking-tighter">Men</h3>
+                        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2 group-hover:text-white transition-colors">Explore Archive →</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'shop' %}?category=women"
+                    class="group relative aspect-[4/5] overflow-hidden rounded-3xl bg-gray-100 block shadow-sm hover:shadow-2xl transition-all duration-500">
+                    <img src="{% static 'images/women.jpg' %}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Women's Collection" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex flex-col justify-end p-8">
+                        <h3 class="text-white text-3xl font-black uppercase tracking-tighter">Women</h3>
+                        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2 group-hover:text-white transition-colors">Explore Archive →</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'shop' %}?category=accessories"
+                    class="group relative aspect-[4/5] overflow-hidden rounded-3xl bg-gray-100 block shadow-sm hover:shadow-2xl transition-all duration-500">
+                    <img src="{% static 'images/ass.jpg' %}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Accessories" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex flex-col justify-end p-8">
+                        <h3 class="text-white text-3xl font-black uppercase tracking-tighter">Accessories</h3>
+                        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2 group-hover:text-white transition-colors">Explore Archive →</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-neutral-50 overflow-hidden border-y border-neutral-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-end justify-between mb-12">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tighter text-gray-900">Best Sellers</h2>
+                    <p class="text-gray-500 font-medium">Top picks for your rotation.</p>
+                </div>
+                <a href="{% url 'shop' %}"
+                    class="hidden md:flex items-center space-x-2 font-black uppercase text-xs border-b-2 border-black pb-1 hover:text-gray-400 hover:border-gray-400 transition-all">
+                    <span>View All</span>
+                </a>
+            </div>
+
+            <div class="flex overflow-x-auto pb-10 space-x-6 no-scrollbar snap-x">
+                {% for product in best_sellers %}
+                <div class="min-w-[280px] md:min-w-[320px] snap-start bg-white p-4 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all group border border-transparent hover:border-neutral-100">
+                    <a href="{% url 'product_detail' product.id %}" class="block">
+                        <div class="aspect-[3/4] bg-neutral-100 rounded-[2rem] overflow-hidden mb-6 relative">
+                            
+                            {% with product.images.all|first as main_img %}
+                                {% if main_img and main_img.image %}
+                                    <img src="{{ main_img.image.url }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="{{ product.name }}">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center bg-neutral-200 text-neutral-400 text-[10px] font-bold uppercase">No Image Uploaded</div>
+                                {% endif %}
+                            {% endwith %}
+
+                            {% if not product.in_stock %}
+                                <div class="absolute top-4 right-4 bg-black text-white px-3 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-full">Sold Out</div>
+                            {% elif product.stock_count < 5 %}
+                                <div class="absolute top-4 right-4 bg-white text-black px-3 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-full shadow-lg">Low Stock</div>
+                            {% endif %}
+
+                            {% if product.off_percentage > 0 %}
+                                <span class="absolute top-4 left-4 bg-black text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-tighter">
+                                    -{{ product.off_percentage }}%
+                                </span>
+                            {% endif %}
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-lg mb-1 px-2">{{ product.name }}</h3>
+                        <div class="flex items-center space-x-2 px-2 pb-2">
+                            <span class="text-xl font-black text-black">₹{{ product.price }}</span>
+                        </div>
+                    </a>
+                </div>
+                {% empty %}
+                <p class="text-gray-400 italic px-8">Mark products as 'Best Seller' in Admin to see them here.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends 'shop/dashboard/base_dashboard.html' %}
+
+{% block content %}
+
+<div class="mb-8">
+    <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+        <a href="{% url 'dashboard_products' %}" class="hover:text-black transition-colors">Products</a>
+        <span>/</span>
+        <span class="font-medium text-black">{% if product %}Edit{% else %}Add{% endif %} Product</span>
+    </div>
+    <h1 class="text-3xl font-bold text-gray-900">{% if product %}Edit Product{% else %}Add New Product{% endif %}</h1>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8 max-w-5xl mx-auto">
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-100 space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">Basic Information</h3>
+                    
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Product Name</label>
+                        <input type="text" name="name" value="{{ product.name|default:'' }}" placeholder="e.g. Classic Denim Jacket" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Description</label>
+                        <textarea name="description" rows="5" placeholder="Describe the fabric, fit, and details..." required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all">{{ product.description|default:'' }}</textarea>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Categories</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {% for category in categories %}
+                        <label class="flex items-center space-x-3 p-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-black transition-all">
+                            <input type="checkbox" name="categories" value="{{ category.id }}" class="w-5 h-5 text-black border-gray-300 rounded focus:ring-black" {% if product and category in product.categories.all %}checked{% endif %}>
+                            <span class="text-sm font-medium text-gray-900">{{ category.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-100 space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">Inventory & Pricing</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Price (₹)</label>
+                            <input type="number" step="0.01" name="price" value="{{ product.price|default:'' }}" placeholder="0.00" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-black">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Stock Count</label>
+                            <input type="number" name="stock_count" value="{{ product.stock_count|default:'0' }}" placeholder="Quantity" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-black">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Discount %</label>
+                            <input type="number" name="off_percentage" value="{{ product.off_percentage|default:'0' }}" placeholder="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-black">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-100 space-y-6">
+                    <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">Product Gallery</h3>
+                    
+                    {% if product %}
+                    <div class="grid grid-cols-4 gap-4">
+                        {% for image in product.images.all %}
+                        <div class="relative aspect-[3/4] bg-white border rounded-lg overflow-hidden group" id="img-holder-{{ image.id }}">
+                            {% if image.image %}
+                                <img src="{{ image.image.url }}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <button type="button" onclick="markDelete('{{ image.id }}')" class="bg-red-600 text-white px-3 py-1 text-xs font-bold rounded shadow hover:bg-red-700">DELETE</button>
+                                </div>
+                                {% if image.color %}
+                                <span class="absolute bottom-1 right-1 bg-black text-white text-[10px] px-2 py-0.5 rounded uppercase font-bold">{{ image.color.name }}</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="delete_images" id="delete-ids">
+                    {% endif %}
+
+                    <div class="p-4 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:border-black transition-colors">
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">General Gallery Upload (No Specific Color)</label>
+                        <input type="file" name="general_images" multiple accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800">
+                    </div>
+
+                    <div id="color-upload-area" class="space-y-4">
+                        </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+
+                <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <h3 class="font-semibold text-gray-900 mb-3 border-b pb-2">Sizes</h3>
+                    <div class="grid grid-cols-4 gap-2">
+                        {% for size in sizes %}
+                        <label class="cursor-pointer relative">
+                            <input type="checkbox" name="sizes" value="{{ size.id }}" class="peer sr-only" {% if product and size in product.sizes.all %}checked{% endif %}>
+                            <div class="w-full py-2 text-center border rounded-md text-xs font-bold text-gray-700 peer-checked:bg-black peer-checked:text-white peer-checked:border-black transition-all hover:border-gray-400">
+                                {{ size.name }}
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <h3 class="font-semibold text-gray-900 mb-3 border-b pb-2">Colors</h3>
+                    <div class="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                        {% for color in colors %}
+                        <label class="flex items-center space-x-3 p-2 border rounded cursor-pointer hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="colors" value="{{ color.id }}" data-color-name="{{ color.name }}" 
+                                   class="color-checkbox w-4 h-4 text-black rounded focus:ring-black" 
+                                   onchange="toggleColorUpload(this)"
+                                   {% if product and color in product.colors.all %}checked{% endif %}>
+                            <span class="w-4 h-4 rounded-full border border-gray-300" style="background-color: {{ color.hex_code }};"></span>
+                            <span class="text-sm font-medium text-gray-700">{{ color.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm space-y-3">
+                    <h3 class="font-semibold text-gray-900 border-b pb-2 mb-2">Visibility</h3>
+
+                    <label class="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:border-black transition-all">
+                        <input type="checkbox" name="in_stock" class="w-5 h-5 text-black rounded focus:ring-black" {% if not product or product.in_stock %}checked{% endif %}>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-gray-900">In Stock</span>
+                            <span class="text-[10px] text-gray-500">Available for purchase</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:border-black transition-all">
+                        <input type="checkbox" name="is_featured" class="w-5 h-5 text-black rounded focus:ring-black" {% if product and product.is_featured %}checked{% endif %}>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-gray-900">Featured</span>
+                            <span class="text-[10px] text-gray-500">Show on Home Page</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:border-black transition-all">
+                        <input type="checkbox" name="is_bestseller" class="w-5 h-5 text-black rounded focus:ring-black" {% if product and product.is_bestseller %}checked{% endif %}>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-gray-900">Best Seller</span>
+                            <span class="text-[10px] text-gray-500">Mark as top selling</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="pt-4 space-y-3">
+                    <button type="submit" class="w-full py-4 bg-black text-white text-lg font-bold rounded-xl shadow-xl hover:bg-gray-900 hover:scale-[1.02] transition-all active:scale-95">
+                        {% if product %}Update Product{% else %}Publish Product{% endif %}
+                    </button>
+                    <a href="{% url 'dashboard_products' %}" class="block w-full py-3 text-center border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:border-black hover:text-black transition-all">Cancel</a>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleColorUpload(checkbox) {
+        const colorId = checkbox.value;
+        const colorName = checkbox.getAttribute('data-color-name');
+        const container = document.getElementById('color-upload-area');
+        const elementId = `upload-block-${colorId}`;
+
+        if (checkbox.checked) {
+            // Create the upload block if it doesn't exist
+            if (!document.getElementById(elementId)) {
+                const div = document.createElement('div');
+                div.id = elementId;
+                div.className = "p-4 bg-white border-2 border-dashed border-blue-200 rounded-lg hover:border-blue-500 transition-colors animate-fade-in";
+                div.innerHTML = `
+                    <label class="block text-xs font-bold text-blue-600 mb-2 uppercase tracking-wide">
+                        Upload Images for ${colorName}
+                    </label>
+                    <input type="file" name="color_images_${colorId}" multiple accept="image/*" 
+                           class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                `;
+                container.appendChild(div);
+            }
+        } else {
+            // Remove the block if unchecked
+            const block = document.getElementById(elementId);
+            if (block) {
+                block.remove();
+            }
+        }
+    }
+
+    // Delete Image Logic
+    let deleteIds = [];
+    function markDelete(imgId) {
+        if(confirm("Are you sure you want to remove this image?")) {
+            deleteIds.push(imgId);
+            document.getElementById('delete-ids').value = deleteIds.join(',');
+            
+            // Visual feedback
+            const wrapper = document.getElementById(`img-holder-${imgId}`);
+            wrapper.style.opacity = '0.3';
+            wrapper.style.pointerEvents = 'none';
+        }
+    }
+
+    // Trigger loads for pre-selected colors on Edit page
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.color-checkbox').forEach(box => {
+            if(box.checked) {
+                toggleColorUpload(box);
+            }
+        });
+    });
+</script>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+</style>
+
+{% endblock %}

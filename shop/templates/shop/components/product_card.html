@@ -1,0 +1,66 @@
+<div class="group block relative">
+    <a href="{% url 'product_detail' product.id %}" class="block">
+        <div class="relative overflow-hidden bg-neutral-100 aspect-[3/4] rounded-2xl mb-4">
+            {% with product.images.first as main_img %}
+                {% if main_img and main_img.image %}
+                    <img src="{{ main_img.image.url }}" alt="{{ product.name }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-neutral-200 text-neutral-400 text-[10px] font-bold uppercase">
+                        No Image
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% if not product.in_stock %}
+                <div class="absolute top-3 left-3 bg-neutral-900 text-white px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg">
+                    Sold Out
+                </div>
+            {% elif product.stock_count < 5 %}
+                <div class="absolute top-3 left-3 bg-orange-500 text-white px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg">
+                    Low Stock
+                </div>
+            {% endif %}
+
+            {% if product.off_percentage > 0 %}
+                <div class="absolute top-3 right-3 bg-red-600 text-white px-3 py-1.5 text-[10px] font-black rounded-lg shadow-lg">
+                    -{{ product.off_percentage }}%
+                </div>
+            {% endif %}
+
+            <button onclick="event.preventDefault(); addToCart('{{ product.id }}', '{{ product.name|escapejs }}', '{{ product.price }}', '{% if product.images.first and product.images.first.image %}{{ product.images.first.image.url }}{% endif %}')"
+    class="absolute bottom-4 left-4 right-4 bg-white text-black py-4 px-4 flex items-center justify-center space-x-2 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 rounded-xl shadow-2xl active:scale-95">
+    <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+    <span class="text-[10px] font-black uppercase tracking-widest">Add to Bag</span>
+</button>
+        </div>
+
+        <div class="px-1">
+            <div class="flex justify-between items-start mb-1">
+                <div>
+                    {% with product.categories.first as cat %}
+                        {% if cat %}
+                        <p class="text-[9px] text-neutral-400 font-black uppercase tracking-[0.2em] mb-1">
+                            {{ cat.name }}
+                        </p>
+                        {% endif %}
+                    {% endwith %}
+                    <h3 class="text-sm font-bold text-neutral-900 group-hover:text-neutral-600 transition-colors">{{ product.name }}</h3>
+                </div>
+                <div class="flex items-center space-x-1 bg-neutral-50 px-2 py-1 rounded-lg">
+                    <i data-lucide="star" class="w-3 h-3 text-yellow-500 fill-yellow-500"></i>
+                    <span class="text-[10px] font-black text-neutral-600">{{ product.rating|default:"5.0" }}</span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 mt-2">
+                <span class="text-lg font-black text-black">₹{{ product.price }}</span>
+                {% if product.original_price %}
+                <span class="text-xs text-neutral-400 line-through font-medium">
+                    ₹{{ product.original_price }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+</div>

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen flex bg-white overflow-hidden">
+    
+    <div class="hidden lg:flex lg:w-1/2 relative bg-neutral-900 text-white">
+        <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=2574&auto=format&fit=crop"
+            alt="Graduate Fashion" class="absolute inset-0 w-full h-full object-cover opacity-60" />
+
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+
+        <div class="relative z-10 p-16 flex flex-col justify-between h-full w-full">
+            <div>
+                <h1 class="text-6xl font-black uppercase tracking-tighter leading-none mb-4">GRADUATE</h1>
+                <div class="h-1.5 w-16 bg-white mb-8"></div>
+            </div>
+
+            <div class="max-w-md">
+                <h2 class="text-3xl font-black uppercase tracking-tight mb-4">The Next Chapter Starts Here.</h2>
+                <p class="text-lg font-light text-gray-300 leading-relaxed">
+                    Join our exclusive circle. Track your orders in ₹, save your logistics, and get early access to new drops.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full lg:w-1/2 bg-[#7C5C29] flex items-center justify-center p-6 md:p-12 relative">
+        <a href="{% url 'home' %}"
+            class="absolute top-8 right-8 p-3 rounded-full border border-white/20 text-white hover:bg-white hover:text-[#7C5C29] transition-all duration-300 z-50">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </a>
+
+        <div class="w-full max-w-md space-y-10 animate-in fade-in slide-in-from-right-4 duration-700">
+            <div class="text-white">
+                <h2 class="text-4xl font-black uppercase tracking-tighter mb-2">Member Access</h2>
+                <p class="text-white/70 font-medium uppercase tracking-[0.2em] text-[10px]">Establish your account profile</p>
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="p-4 bg-red-500/20 border border-red-500/50 rounded-2xl">
+                {% for error in form.non_field_errors %}
+                    <p class="text-white text-xs font-bold uppercase tracking-widest">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="relative space-y-1 group">
+                    <label for="{{ field.id_for_label }}" class="block text-[10px] font-black uppercase tracking-[0.2em] text-white/50 group-focus-within:text-white transition-colors">
+                        {{ field.label }}
+                    </label>
+                    
+                    <div class="border-b border-white/20 group-focus-within:border-white transition-all duration-300">
+                        {{ field }}
+                    </div>
+
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                        <p class="text-red-200 text-[10px] font-bold uppercase mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <style>
+                    /* Force styling on Django's auto-generated inputs */
+                    #checkout-main-form input, 
+                    form input {
+                        width: 100% !important;
+                        background: transparent !important;
+                        border: none !important;
+                        padding: 12px 0 !important;
+                        color: white !important;
+                        font-weight: 700 !important;
+                        font-size: 0.875rem !important;
+                    }
+                    input:focus { outline: none !important; }
+                    input::placeholder { color: rgba(255,255,255,0.3) !important; }
+                    
+                    /* Clean up the help text from UserCreationForm */
+                    .helptext, .text-muted { display: none; }
+                </style>
+
+                <div class="pt-10">
+                    <button type="submit"
+                        class="w-full bg-white text-[#7C5C29] py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl hover:bg-black hover:text-white transition-all duration-500 flex items-center justify-center active:scale-95">
+                        <span>Create Membership</span>
+                        <i data-lucide="chevron-right" class="ml-2 w-4 h-4"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="pt-6 text-center">
+                <p class="text-white/50 text-[10px] font-black uppercase tracking-widest">
+                    Already part of the circle?
+                    <a href="{% url 'login' %}" class="text-white border-b border-white ml-1 pb-0.5 hover:text-black hover:border-black transition-all">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Clean UI: No Nav/Footer on Auth pages */
+    nav, footer { display: none !important; }
+    
+    /* Chrome Autofill Fix */
+    input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 30px #7C5C29 inset !important;
+        -webkit-text-fill-color: white !important;
+    }
+</style>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}
