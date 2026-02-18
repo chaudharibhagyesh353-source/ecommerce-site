@@ -152,9 +152,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # =========================================================
 
+# ✅ ALLAUTH CONFIGURATION (CLEAN & ERROR-FREE)
 AUTHENTICATION_BACKENDS = [
-'django.contrib.auth.backends.ModelBackend',
-'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 SITE_ID = 1
@@ -163,17 +164,11 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# ✅ New syntax (replaces deprecated settings)
-
-ACCOUNT_LOGIN_METHODS = {'email'}
-
-ACCOUNT_SIGNUP_FIELDS = [
-'email',
-'password1',
-'password2'
-]
-
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+# ✅ Updated settings to fix (account.W001)
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  # Use email to login
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False        # Email-only login
+ACCOUNT_EMAIL_VERIFICATION = 'none'      # Skip verification for now
 
 # -------------------------------
 
