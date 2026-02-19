@@ -2,11 +2,10 @@
 Django settings for ecommerce_project project.
 Updated for Graduate Brand - Feb 2026
 """
-
+import cloudinary
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-import dj_database_url
 
 # -------------------------------
 
@@ -58,6 +57,10 @@ INSTALLED_APPS = [
 'allauth.account',
 'allauth.socialaccount',
 #'allauth.socialaccount.providers.google',
+
+# Cloudinary
+'cloudinary',
+'cloudinary_storage',
 
 ]
 
@@ -142,8 +145,11 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Cloudinary Media Storage
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -185,3 +191,14 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'      # Skip verification for now
 
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+
+# =========================================================
+# ☁️ CLOUDINARY CONFIGURATION
+# =========================================================
+
+
+cloudinary.config(
+    cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key = os.getenv("CLOUDINARY_API_KEY"),
+    api_secret = os.getenv("CLOUDINARY_API_SECRET"),
+)
