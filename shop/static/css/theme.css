@@ -179,3 +179,28 @@
     line-height: 1.5;
   }
 }
+
+
+/* =====================================
+   BRAND LOGO MOBILE OPTIMIZATION
+===================================== */
+
+.brand-logo {
+    white-space: nowrap;   /* Text break stop */
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    .brand-logo {
+        font-size: 18px;
+        letter-spacing: 1px;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .brand-logo {
+        font-size: 15px;
+        letter-spacing: 1px;
+    }
+}

@@ -64,9 +64,11 @@
     <header class="sticky top-0 z-50 bg-white border-b border-neutral-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                <a href="{% url 'home' %}" class="text-2xl tracking-[0.2em] uppercase font-black">
-                    Graduate kapde wala
-                </a>
+                <a href="{% url 'home' %}" 
+   class="brand-logo text-xl md:text-2xl tracking-[0.2em] uppercase font-black leading-tight">
+    Graduate kapde wala
+</a>
+
 
                 <nav class="hidden md:flex items-center space-x-10">
                     <a href="{% url 'home' %}" class="text-[10px] font-black uppercase tracking-widest {% if request.path == '/' %}text-black{% else %}text-neutral-400 hover:text-black{% endif %}">Home</a>
