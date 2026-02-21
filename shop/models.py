@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from cloudinary.models import CloudinaryField
 
 # --- BASE MODELS ---
 
@@ -103,7 +104,7 @@ class Product(models.Model):
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image_url = models.URLField(max_length=500, blank=True, null=True)
-    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    image = CloudinaryField('image', folder='product_images', blank=True, null=True)
     color = models.ForeignKey(Color, on_delete=models.SET_NULL, null=True, blank=True, related_name='images')
     is_main = models.BooleanField(default=False)
     
