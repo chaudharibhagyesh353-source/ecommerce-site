@@ -17,20 +17,30 @@
     <div class="max-w-7xl mx-auto px-4 py-8">
 
         <!-- MOBILE FILTER BAR -->
-        <div class="lg:hidden flex items-center justify-between mb-6">
+        <!-- MOBILE TOP BAR -->
+<div class="lg:hidden mb-6 space-y-4">
 
-            <p class="text-sm font-bold">
-                {{ products|length }} Styles
-            </p>
+    <!-- Row 1 -->
+    <div class="flex items-center justify-between">
+        <p class="text-sm font-bold">
+            {{ products|length }} Styles
+        </p>
 
-            <button onclick="toggleFilters()"
-                class="flex items-center gap-2 px-5 py-3 bg-black text-white rounded-xl shadow-lg active:scale-95">
-                
-                <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
-                <span class="text-xs font-bold uppercase">Filters</span>
-            </button>
+        <button onclick="toggleFilters()"
+            class="flex items-center gap-2 px-5 py-3 bg-black text-white rounded-xl shadow-lg active:scale-95">
+            
+            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+            <span class="text-xs font-bold uppercase">Filters</span>
+        </button>
+    </div>
 
-        </div>
+    <!-- Row 2 - Search -->
+    <form action="{% url 'shop' %}" method="GET">
+        <input type="text" name="q" placeholder="Search Styles..."
+            class="w-full px-4 py-3 bg-neutral-100 rounded-xl text-sm font-bold uppercase tracking-widest outline-none focus:bg-white focus:ring-2 focus:ring-black transition">
+    </form>
+
+</div>
 
         <div class="flex gap-10">
 
@@ -135,11 +145,18 @@
             <!-- ================= PRODUCTS ================= -->
             <div class="flex-1">
 
-                <div class="hidden lg:block mb-6">
-                    <p class="text-sm font-bold">
-                        Showing {{ products|length }} Styles
-                    </p>
-                </div>
+                <div class="hidden lg:flex items-center justify-between mb-6">
+
+    <p class="text-sm font-bold">
+        Showing {{ products|length }} Styles
+    </p>
+
+    <form action="{% url 'shop' %}" method="GET" class="w-80">
+        <input type="text" name="q" placeholder="Search Styles..."
+            class="w-full px-4 py-3 bg-neutral-100 rounded-xl text-xs font-bold uppercase tracking-widest outline-none focus:bg-white focus:ring-2 focus:ring-black transition">
+    </form>
+
+</div>
 
                 <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for product in products %}
