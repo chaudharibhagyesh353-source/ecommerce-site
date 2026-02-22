@@ -10,11 +10,12 @@ from django.views.static import serve
 from django.urls import re_path
 
 from django.contrib.sitemaps.views import sitemap
-from shop.sitemaps import ProductSitemap
+from shop.sitemaps import ProductSitemap, StaticViewSitemap
 from django.views.generic import TemplateView
 
 
 sitemaps = {
+    'static': StaticViewSitemap,
     'products': ProductSitemap,
 }
 
@@ -34,7 +35,12 @@ urlpatterns = [
     )),
 
     # sitemap.xml
-    path("sitemap.xml", sitemap, {'sitemaps': sitemaps}),
+    path(
+    "sitemap.xml",
+    sitemap,
+    {'sitemaps': sitemaps},
+    name="django.contrib.sitemaps.views.sitemap"
+),
 ]
 
 
