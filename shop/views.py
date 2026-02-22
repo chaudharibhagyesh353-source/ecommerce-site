@@ -99,8 +99,7 @@ def product_detail(request, slug):
         Product.objects.prefetch_related('images'),
         slug=slug
     )
-    
-    # ✅ Feature: Handle Review Submission
+
     if request.method == 'POST' and request.user.is_authenticated:
         Review.objects.create(
             product=product,
@@ -114,7 +113,7 @@ def product_detail(request, slug):
     related_products = Product.objects.filter(
         categories__in=product.categories.all()
     ).exclude(id=product.id).prefetch_related('images').distinct()[:4]
-    
+
     reviews = product.reviews.all().order_by('-created_at')
     sizes = product.sizes.all().order_by('sort_order')
 
