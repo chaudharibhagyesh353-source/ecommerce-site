@@ -119,7 +119,7 @@
             <div class="flex overflow-x-auto pb-10 space-x-6 no-scrollbar snap-x">
                 {% for product in best_sellers %}
                 <div class="min-w-[280px] md:min-w-[320px] snap-start bg-white p-4 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all group border border-transparent hover:border-neutral-100">
-                    <a href="{% url 'product_detail' product.id %}" class="block">
+                    <a href="{% url 'product_detail' product.slug %}" class="block">
                         <div class="aspect-[3/4] bg-neutral-100 rounded-[2rem] overflow-hidden mb-6 relative">
                             
                             {% with product.images.all|first as main_img %}
