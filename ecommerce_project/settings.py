@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
     "graduatekapadewala.com",
     "www.graduatekapadewala.com",
 ]
-
+SITE_ID = 1
 # -------------------------------
 
 # INSTALLED APPS
