@@ -14,6 +14,11 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from decimal import Decimal
 import json
+from django.shortcuts import redirect
+
+def product_redirect_by_id(request, id):
+    product = get_object_or_404(Product, id=id)
+    return redirect('product_detail', slug=product.slug, permanent=True)
 
 # --- PUBLIC VIEWS ---
 

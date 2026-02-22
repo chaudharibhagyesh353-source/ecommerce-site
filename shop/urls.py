@@ -7,6 +7,7 @@ urlpatterns = [
     path('shop/', views.shop, name='shop'),
 
     # ✅ UPDATED: SEO Friendly Product URL (Slug Based)
+    path('product/<int:id>/', views.product_redirect_by_id),
     path('product/<slug:slug>/', views.product_detail, name='product_detail'),
 
     path('cart/', views.cart, name='cart'),
