@@ -15,7 +15,6 @@ from django.views.generic import TemplateView
 
 
 sitemaps = {
-    'static': StaticViewSitemap,
     'products': ProductSitemap,
 }
 
