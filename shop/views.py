@@ -412,6 +412,16 @@ def subscribe(request):
 # 💳 CREATE RAZORPAY PAYMENT ORDER
 # =========================================================
 
+from django.http import HttpResponse
+
+def robots_txt(request):
+    content = """User-Agent: *
+Allow: /
+
+Sitemap: https://graduatekapadewala.com/sitemap.xml
+"""
+    return HttpResponse(content, content_type="text/plain")
+
 @csrf_exempt
 def create_payment_order(request):
     if request.method == "POST":
