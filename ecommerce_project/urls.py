@@ -10,7 +10,7 @@ from django.views.static import serve
 from django.urls import re_path
 
 from django.contrib.sitemaps.views import sitemap
-from shop.sitemaps import ProductSitemap, StaticViewSitemap
+from shop.sitemaps import ProductSitemap
 from django.views.generic import TemplateView
 
 
