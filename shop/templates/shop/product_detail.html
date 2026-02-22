@@ -157,7 +157,7 @@
             <div class="flex overflow-x-auto pb-10 space-x-6 no-scrollbar snap-x">
                 {% for related in related_products %}
                     <div class="min-w-[260px] md:min-w-[320px] snap-start group">
-                        <a href="{% url 'product_detail' related.id %}" class="block">
+                        <a href="{% url 'product_detail' related.slug %}" class="block">
                             <div class="aspect-[3/4] bg-neutral-50 rounded-[2rem] overflow-hidden mb-6 relative border border-neutral-100 shadow-sm transition-all duration-500 hover:shadow-xl">
                                 {% with related.images.all|first as rel_img %}
                                     {% if rel_img and rel_img.image %}
