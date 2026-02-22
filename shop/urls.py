@@ -5,17 +5,17 @@ urlpatterns = [
     # --- Public Pages ---
     path('', views.home, name='home'),
     path('shop/', views.shop, name='shop'),
-    path('product/<str:id>/', views.product_detail, name='product_detail'),
+
+    # ✅ UPDATED: SEO Friendly Product URL (Slug Based)
+    path('product/<slug:slug>/', views.product_detail, name='product_detail'),
+
     path('cart/', views.cart, name='cart'),
     path('checkout/', views.checkout, name='checkout'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     
-    # --- Payment & Actions (New) ---
-    # This fixes the 404 error when clicking "Place Order" in checkout.html
+    # --- Payment & Actions ---
     path('create-payment-order/', views.create_payment_order, name='create_payment_order'),
-    
-    # This connects the newsletter form in main.js
     path('subscribe/', views.subscribe, name='subscribe'),
 
     # --- Dashboard ---

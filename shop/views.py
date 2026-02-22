@@ -94,9 +94,11 @@ def shop(request):
     }
     return render(request, 'shop/shop.html', context)
 
-def product_detail(request, id):
-    # ✅ UPDATE: Added prefetch_related to stop the Internal Server Error on missing images
-    product = get_object_or_404(Product.objects.prefetch_related('images'), id=id)
+def product_detail(request, slug):
+    product = get_object_or_404(
+        Product.objects.prefetch_related('images'),
+        slug=slug
+    )
     
     # ✅ Feature: Handle Review Submission
     if request.method == 'POST' and request.user.is_authenticated:
@@ -107,11 +109,11 @@ def product_detail(request, id):
             text=request.POST.get('text'),
             is_verified=True
         )
-        return redirect('product_detail', id=product.id)
+        return redirect('product_detail', slug=product.slug)
 
     related_products = Product.objects.filter(
         categories__in=product.categories.all()
-    ).exclude(id=id).prefetch_related('images').distinct()[:4]
+    ).exclude(id=product.id).prefetch_related('images').distinct()[:4]
     
     reviews = product.reviews.all().order_by('-created_at')
     sizes = product.sizes.all().order_by('sort_order')
